@@ -2,11 +2,9 @@
 module.exports = {
   darkMode: ["class"],
   content: [
-    "./pages/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-    "./app/**/*.{ts,tsx}",
-    "./src/**/*.{ts,tsx}",
-    "*.{js,ts,jsx,tsx,mdx}",
+    "./app/**/*.{js,ts,jsx,tsx}", // for App Router
+    "./pages/**/*.{js,ts,jsx,tsx}", // if using Pages Router
+    "./components/**/*.{js,ts,jsx,tsx}", // for your components
   ],
   theme: {
     container: {
@@ -74,4 +72,4 @@ module.exports = {
     },
   },
   plugins: [require("tailwindcss-animate")],
-}
+};

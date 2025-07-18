@@ -26,6 +26,12 @@
     --radius: 0.75rem;
   }
 
+  .test-box {
+    background-color: red;
+    color: white;
+    padding: 1rem;
+  }
+
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
