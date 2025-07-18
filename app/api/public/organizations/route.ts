@@ -2,15 +2,16 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const backendUrl = process.env.BACKEND_URL || "http://localhost:3001";
-
-    const response = await fetch(`${backendUrl}/api/v1/organizations`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      cache: "no-store",
-    });
+    const response = await fetch(
+      `${process.env.BACKEND_URL}/api/v1/organizations`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        cache: "no-store",
+      }
+    );
 
     if (!response.ok) {
       console.error(
@@ -18,7 +19,9 @@ export async function GET() {
         response.status,
         response.statusText
       );
-      throw new Error(`Backend responded with ${response.status}`);
+      throw new Error(
+        `Backend responded with ${response.status}. ${response.statusText}`
+      );
     }
 
     const data = await response.json();
@@ -26,6 +29,7 @@ export async function GET() {
 
     // Ensure we return an array
     const organizations = Array.isArray(data) ? data : [data];
+    console.log(organizations);
 
     return NextResponse.json(organizations);
   } catch (error) {
