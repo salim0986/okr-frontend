@@ -10,8 +10,6 @@ import {
 export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <div className="test-box">If red, CSS is working</div>{" "}
-      {/* This is just a test box to check if CSS is applied correctly */}
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">

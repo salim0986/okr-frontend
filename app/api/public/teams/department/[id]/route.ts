@@ -1,13 +1,11 @@
-import { type NextRequest, NextResponse } from "next/server";
-
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3001";
+import { NextResponse } from "next/server";
 
 export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  request: Request,
+  { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = await params;
+    const { id } = params;
 
     if (!id) {
       return NextResponse.json(
@@ -16,36 +14,40 @@ export async function GET(
       );
     }
 
-    // Use the regular teams endpoint
-    const response = await fetch(
-      `${BACKEND_URL}/api/v1/team/department/${id}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const backendUrl = process.env.BACKEND_URL || "http://localhost:3001";
+    console.log("Fetching teams for department:", id);
+
+    const response = await fetch(`${backendUrl}/api/v1/team/department/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      cache: "no-store",
+    });
 
     if (!response.ok) {
       console.error(
-        `Backend responded with ${response.status}: ${response.statusText}`
+        "Backend response not ok:",
+        response.status,
+        response.statusText
       );
-      return NextResponse.json(
-        { error: "Failed to fetch teams from backend" },
-        { status: response.status }
-      );
+      throw new Error(`Backend responded with ${response.status}`);
     }
 
     const data = await response.json();
-    console.log("Fetched teams for dept", id, ":", data);
+    console.log("Teams fetched successfully:", data);
 
     // Ensure we return an array
     const teams = Array.isArray(data) ? data : [data];
+
     return NextResponse.json(teams);
   } catch (error) {
-    console.error("Error fetching public teams:", error);
+    console.error("Error fetching teams:", error);
     return NextResponse.json(
-      { error: "Failed to connect to backend" },
+      {
+        error: "Failed to fetch teams",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 }
     );
   }

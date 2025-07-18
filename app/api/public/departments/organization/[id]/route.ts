@@ -1,13 +1,11 @@
-import { type NextRequest, NextResponse } from "next/server";
-
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3001";
+import { NextResponse } from "next/server";
 
 export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  request: Request,
+  { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = await params;
+    const { id } = params;
 
     if (!id) {
       return NextResponse.json(
@@ -16,36 +14,43 @@ export async function GET(
       );
     }
 
-    // Use the regular departments endpoint
+    const backendUrl = process.env.BACKEND_URL || "http://localhost:3001";
+    console.log("Fetching departments for organization:", id);
+
     const response = await fetch(
-      `${BACKEND_URL}/api/v1/department/organization/${id}`,
+      `${backendUrl}/api/v1/department/organization/${id}`,
       {
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
+        cache: "no-store",
       }
     );
 
     if (!response.ok) {
       console.error(
-        `Backend responded with ${response.status}: ${response.statusText}`
+        "Backend response not ok:",
+        response.status,
+        response.statusText
       );
-      return NextResponse.json(
-        { error: "Failed to fetch departments from backend" },
-        { status: response.status }
-      );
+      throw new Error(`Backend responded with ${response.status}`);
     }
 
     const data = await response.json();
-    console.log("Fetched departments for org", id, ":", data);
+    console.log("Departments fetched successfully:", data);
 
     // Ensure we return an array
     const departments = Array.isArray(data) ? data : [data];
+
     return NextResponse.json(departments);
   } catch (error) {
-    console.error("Error fetching public departments:", error);
+    console.error("Error fetching departments:", error);
     return NextResponse.json(
-      { error: "Failed to connect to backend" },
+      {
+        error: "Failed to fetch departments",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 }
     );
   }
